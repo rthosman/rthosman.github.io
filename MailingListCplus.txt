@@ -1,0 +1,159 @@
+// MailList.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iomanip>
+#include <string>
+#include <iostream>
+#include <istream>
+#include <fstream>
+#include <cctype>
+
+using namespace std;
+
+string fileName = "MailList.txt";
+string name;
+string address;
+string city;
+string state;
+string zip;
+
+int pos = 0;
+int nameWidth = 25;
+int addressWidth = 20;
+int cityWidth = 20;
+int stateWidth = 4;
+int zipWidth = 5;
+
+char getActionCode()
+{
+	cout << endl << endl;
+	cout << "Enter A  to Add a record ... " << endl;
+	cout << "      L  to List records ... " << endl;
+	cout << "      M  Mail label list ... " << endl;
+	cout << "      Q  to Quit program: ";
+
+	string actionCode;
+	getline(cin, actionCode);
+	return toupper(actionCode[0]);
+}
+
+void getRecordInput()
+{
+	cout << endl << endl;
+	cout << "Enter name: ";
+	getline(cin, name);
+
+	cout << "Enter addr: ";
+	getline(cin, address);
+
+	cout << "Input city: ";
+	getline(cin, city);
+
+	cout << "State code: ";
+	getline(cin, state);
+	state[0] = toupper(state[0]);
+	state[1] = toupper(state[1]);
+
+	cout << "  Zip code: ";
+	getline(cin, zip);
+	cout << endl << endl;
+
+	ofstream fileList;
+
+	fileList.open(fileName, ios::app);
+
+	fileList << setprecision(2) << left << setw(25) << name 
+		<< setw(20) << address 
+		<< setw(20) << city 
+		<< setw(2) << state << "  "
+		<< setw(5) << zip << endl;
+
+	fileList.close();
+  }
+
+void listRecords()
+{
+	ifstream fileList;
+	fileList.open(fileName, ios::out);
+
+	string fileValue = "";
+	if (fileList.is_open())
+	{
+		cout << endl << endl << "Records in mailing list:  " << endl << endl;
+
+		while (std::getline(fileList, fileValue))
+		{
+			pos = 0;
+			cout << fileValue.substr(pos, nameWidth);
+			pos += nameWidth;
+			cout << fileValue.substr(pos, addressWidth);
+			pos += addressWidth;
+			cout << fileValue.substr(pos, cityWidth);
+			pos += cityWidth;
+			cout << fileValue.substr(pos, stateWidth);
+			pos += stateWidth;
+			cout << fileValue.substr(pos, zipWidth) << endl;
+		}
+		fileList.close();
+	}
+}
+
+void mailingLabels()
+{
+	ifstream fileList;
+	fileList.open(fileName, ios::out);
+
+	string fileValue = "";
+
+	cout << endl << endl;
+
+	while (std::getline(fileList, fileValue))
+	{
+		pos = 0;
+		cout << fileValue.substr(pos,nameWidth) << endl;
+		pos += nameWidth;
+		cout << fileValue.substr(pos, addressWidth) << endl;
+		pos += addressWidth;
+		cout << fileValue.substr(pos, cityWidth) << " ";
+		pos += cityWidth;
+		cout << fileValue.substr(pos, stateWidth);
+		pos += stateWidth;
+		cout << fileValue.substr(pos, zipWidth) << endl << endl;
+	}
+	cout << endl;
+	fileList.close();
+}
+
+int main()
+{
+	char actionCode;
+
+	actionCode = getActionCode();
+
+	while (actionCode != 'Q')
+	{
+		switch (actionCode)
+		{
+		case 'A':
+			getRecordInput();
+			break;
+		case 'L':
+			listRecords(); 
+			break;
+		case 'M':
+			mailingLabels();
+			break;
+		case 'Q':
+			break;
+		default:
+			cout << endl << "Invalid Selection." << endl << endl;
+			break;
+		}
+		actionCode = getActionCode();
+	} 
+
+	cout << endl;
+	system("pause");
+	return 0;
+}
